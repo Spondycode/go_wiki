@@ -1,3 +1,5 @@
 How Ya Doing ??? Mate
 Freda, I am doing well, thank you for asking.
 This is my first post on this forum
+
+Just added Tailwind CSS to my project used copilot to generate the code and it worked like a charm.
