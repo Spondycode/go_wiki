@@ -1,8 +1,42 @@
-<h1>Editing {{.Title}}</h1>
-
-<form action="/save/{{.Title}}" method="POST">
-  <div>
-    <textarea name="body" rows="20" cols="80">{{printf "%s" .Body}}</textarea>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editing {{.Title}} - Wiki</title>
+  <link rel="stylesheet" href="/static/output.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-4xl font-bold text-gray-900">Editing {{.Title}}</h1>
+      <a href="/new" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition">
+        New Page
+      </a>
+    </div>
+    
+    <form action="/save/{{.Title}}" method="POST" class="space-y-4">
+      <div>
+        <textarea 
+          name="body" 
+          rows="20" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+        >{{printf "%s" .Body}}</textarea>
+      </div>
+      <div class="flex gap-3">
+        <input 
+          type="submit" 
+          value="Save" 
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg cursor-pointer transition"
+        />
+        <a 
+          href="/view/{{.Title}}" 
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-lg inline-block transition"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
   </div>
-  <div><input type="submit" value="Save" /></div>
-</form>
+</body>
+</html>

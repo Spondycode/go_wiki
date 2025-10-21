@@ -55,7 +55,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var templates = template.Must(template.ParseFiles("edit.html", "view.html", "new.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
@@ -65,6 +65,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 }
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validTitle = regexp.MustCompile("^[a-zA-Z0-9]+$")
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -77,10 +78,35 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
+func newPageHandler(w http.ResponseWriter, r *http.Request) {
+	err := templates.ExecuteTemplate(w, "new.html", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func createHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	title := r.FormValue("title")
+	if !validTitle.MatchString(title) {
+		http.Error(w, "Invalid page title", http.StatusBadRequest)
+		return
+	}
+
+	http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+}
+
 func main() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("."))))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
+	http.HandleFunc("/new", newPageHandler)
+	http.HandleFunc("/create", createHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
